@@ -1,0 +1,27 @@
+#Functions to remember
+pickUpWeapon("Old Sword") >> picking up weapon function
+pickUpArmor("Little dress") >> Picking up armor function
+
+#Help
+sys.stdout.write('\r'+b) >> moves curser up one line.
+
+def print_centre(s):
+    print(s.center(shutil.get_terminal_size().columns))
+
+var my_dict = {
+	"my_key": (value_1, value_2, value_3)
+};
+print (my_dict["my_key"][0]) >> This will print value_1
+print (my_dict["my_key"][1]) >> This will print value_2
+
+
+https://medium.com/@biancalorenpadilla/sftp-google-cloud-storage-d559fd16e074
+https://console.cloud.google.com/compute/instances?project=argon-ability-263903&instancessize=50
+
+#TO-DO LIST
+Need to make inventory better, maybe have a seperate page the for inventory instead of in feed
+
+Need to write Battle scenes >> 50/50 chance of Random enemy appearing and then battle, attacking defending etc. 
+Make sure you drop keys, potions, etc after use. 
+Wake up cell text to be added back into the rotation
+Do some testing, try to break the game fix errors then start writing story.
