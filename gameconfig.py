@@ -58,8 +58,10 @@ signal.signal(signal.SIGINT, signal_handler)
 def uploadDatabase():
     #Putting users.db in FTP server
     try:
+        cnopts = sftp.CnOpts()
+        cnopts.hostkeys = None
         Print("*CONNECTING TO SERVER*")
-        with sftp.Connection(host = "104.198.133.105", username="w4rm15h", password="Magmaturtle1") as s:
+        with sftp.Connection(host = "104.198.133.105", username="w4rm15h", password="Magmaturtle1", cnopts=cnopts) as s:
             Print('*SAVING DATA*')
             s.cwd("escapeSaves")
             remotePath='users.db'
@@ -73,8 +75,10 @@ def uploadDatabase():
 def loadProfile(userName):
     #getting user profile from server
     try:
+        cnopts = sftp.CnOpts()
+        cnopts.hostkeys = None
         Print("*ESTABLISHING A CONNECTION*")
-        with sftp.Connection(host = "104.198.133.105", username="w4rm15h", password="Magmaturtle1") as s:
+        with sftp.Connection(host = "104.198.133.105", username="w4rm15h", password="Magmaturtle1", cnopts=cnopts) as s:
             Print("*CONNECTED*")
             s.cwd("escapeSaves")
             remotePath='{0}.abyss'.format(userName)
@@ -89,8 +93,10 @@ def loadProfile(userName):
 def saveProfile(userName):
     #getting user profile from server
     try:
+        cnopts = sftp.CnOpts()
+        cnopts.hostkeys = None
         Print("*ESTABLISHING A CONNECTION*")
-        with sftp.Connection(host = "104.198.133.105", username="w4rm15h", password="Magmaturtle1") as s:
+        with sftp.Connection(host = "104.198.133.105", username="w4rm15h", password="Magmaturtle1", cnopts=cnopts) as s:
             Print("*CONNECTED*")
             s.cwd("escapeSaves")
             remotePath='{0}.abyss'.format(userName)

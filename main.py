@@ -18,10 +18,12 @@ def initfunction():
     try:
         menuStart()
         print()
+        cnopts = sftp.CnOpts()
+        cnopts.hostkeys = None
         Print("*STARTING*")
         Print("*ESCAPE THE ABYSS*")
         Print("*CONNECTING TO SERVER*")
-        with sftp.Connection(host = "104.198.133.105", username="w4rm15h", password="Magmaturtle1") as s:
+        with sftp.Connection(host = "104.198.133.105", username="w4rm15h", password="Magmaturtle1", cnopts=cnopts) as s: 
             s.cwd("escapeSaves")
             remotePath='users.db'
             localPath='users.db'
