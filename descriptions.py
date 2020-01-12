@@ -1,9 +1,3 @@
-NotesForSam = """
-Hey sammy just edit the paragraphs here,
-that way whatever you change will be instantly updated.
-woop woop!!!
-"""
-#Generic Descriptions
 title = """
 ▄▄▄ ..▄▄ ·  ▄▄·  ▄▄▄·  ▄▄▄·▄▄▄ .    ▄▄▄▄▄ ▄ .▄▄▄▄ .     ▄▄▄· ▄▄▄▄·  ▄· ▄▌.▄▄ · .▄▄ ·
 ▀▄.▀·▐█ ▀. ▐█ ▌▪▐█ ▀█ ▐█ ▄█▀▄.▀·    •██  ██▪▐█▀▄.▀·    ▐█ ▀█ ▐█ ▀█▪▐█▪██▌▐█ ▀. ▐█ ▀.
@@ -46,6 +40,7 @@ swordImage = """
 playerProfile = {
 
     "playername": "Player 1",
+    "playermaxhealth": 100,
     "playerhealth": 100,
     "playerprogress": "Empty",
     "playerweapon":{
@@ -60,22 +55,42 @@ playerProfile = {
             "armorDefence": 0,
             "armorColour": "green",
                 },
+    "healingitems":{
+            "potion": 0,
+                },
     "playerattack": 0,
     "playerdefence": 0,
     "playerdeaths": 0,
     "playernew": True,
-    "1. ": "Empty",
-    "2. ": "Empty",
-    "3. ": "Empty",
-    "4. ": "Empty",
-    "5. ": "Empty",
-    "6. ": "Empty",
-    "7. ": "Empty",
-    "8. ": "Empty",
-    "9. ": "Empty",
-    "10. ": "Empty",
-}
+    "inventory": {
+            "1. ": "Empty",
+            "2. ": "Empty",
+            "3. ": "Empty",
+            "4. ": "Empty",
+            "5. ": "Empty",
+            "6. ": "Empty",
+            "7. ": "Empty",
+            "8. ": "Empty",
+            "9. ": "Empty",
+            "10. ": "Empty",
+        }
+}   
 
+#Player key commands
+playerCommands = [
+    'inventory',
+    'stats',
+    'use',
+    'drop',
+    'move',
+    'drink',
+]
+
+greetings = [
+
+    'hello',
+    'hellothere',
+]
 #Enemy Encounters_________________________________________
 level1Enemys = {
 
@@ -205,21 +220,14 @@ oneToTen = [
 
 ]
 
-playerVerbs = [
-
-    "use",
-    "drop",
-    "move",
-    "exit"
-
-]
-
-healingtItems = {
-
-    "potion" : 25,
-    "strong potion": 50
-
-}
+drinkingPotionText = """
+                            You pull the cork off the small vile,
+                            The smell is unpleasent,
+                            you open your mouth and empty the
+                            vile. You almost instantly feel
+                            refreshed and healthy.
+                            Alright, Let's continue...
+"""
 
 errorOutputs = [
 
@@ -294,47 +302,38 @@ helpText = """
                             "inventory" at any point during game play.
 
 
-                            GOOD LUCK.
-"""
+                            GOOD LUCK."""
+
 
 #LEVEL1 - CELL _________________________________________
 
-drinkingPotionText = """
-                            You pull the cork off the small vile,
-                            The smell is unpleasent,
-                            you open your mouth and empty the
-                            vile. You almost instantly feel
-                            refreshed and healthy.
-                            Let's continue...
-"""
+cellOpen = """ 
+                            You wake to find yourself in a small,
+                            dark jailcell.
+                            Terrible things have happened here,
+                            faint sounds of screams haunt the long, narrow,
+                            stone hallways. The old cell doors
+                            lie direcetly NORTH, their bars rusty,
+                            weakened with age.
+                            Fingernail scratchings, torn deep into the EAST wall,
+                            casting warped, disturbing shadows.
+                            To the SOUTH, a small WINDOW, providing
+                            an ominious blue glow, that helps illuminate
+                            the small cell but also provides a chilling breeze.
+                            A wooden desk is chained and bolted to
+                            the shadowy WEST wall.
+                            Despite the rot in the old wood,
+                            The dust on top was fresh.
+                            Someone was in here... Recently."""
 
-cellParagraph = """
-You wake to find yourself in a small,
-dark jailcell.
-Terrible things have happened here,
-faint sounds of screams haunt the long, narrow,
-stone hallways. The old cell doors
-lie direcetly NORTH, their bars rusty,
-weakened with age.
-Fingernail scratchings, torn deep into the EAST wall,
-casting warped, disturbing shadows.
-To the SOUTH, a small WINDOW, providing
-an ominious blue glow, that helps illuminate
-the small cell but also provides a chilling breeze.
-A wooden desk is chained and bolted to
-the shadowy WEST wall.
-Despite the rot in the old wood,
-The dust on top was fresh.
-Someone was in here... Recently.
-"""
 cellNorth = """
                             You walk up to the cell door and wrap your
                             hands around the old bars.
                             You can feel the rust digging into your
                             skin, all you see is darkness.
                             Screams and groans echoing through the
-                            hallways.
-"""
+                            hallways."""
+
 cellEast = """
                             You slowly walk up to the wall
                             and run your fingers down the
@@ -347,20 +346,20 @@ cellSouth = """
                             window.
                             The bars looked cold, frozen.
                             The window is high, though it
-                            seems it might be in reach.
-"""
+                            seems it might be in reach."""
+
 cellWest = """
                             The desk, just sitting there,
                             Rotting and beaten by old age.
                             The dust on top, fresh.
-                            Someone was in here, recently.
-"""
+                            Someone was in here, recently."""
+
 cellBrick = """
                             You grip the edge of the
                             odd looking brick.
                             You pull out the brick,
-                            revealing a note and a key.
-"""
+                            revealing a note and a potion."""
+
 cellNote = """
                             A quick TIP to help you
                             along your travels.
@@ -373,8 +372,8 @@ cellNote = """
                             surroundings.
                             You fold the note and
                             place it back in the hole.
-                            Just incase...
-"""
+                            Just incase..."""
+
 cellWindow = """
                             You jump and hold the glaciated
                             bars blocking the window.
@@ -386,10 +385,10 @@ cellWindow = """
                             pertruding the surface.
                             The souls here, stuck, without
                             even the small comfort of thier
-                            own tears.
-"""
+                            own tears."""
 
-cellDoorOpen = """
+
+unlockingCellDoor = """
                             You walk up to the door
                             and place the key in the lock.
                             you twist the key slowly trying
@@ -404,14 +403,12 @@ cellDoorOpen = """
                             thing to do.
                             You step out of the cell,
                             closing the door behind
-                            you.
-"""
+                            you."""
 
 
 #LEVEL 1 - PART 2 ________________________________________________________________
 
 level1Hallway1 = """
-
                             The air whistles past your ears flowing
                             fast to the NORTH, it was a long hallway,
                             leading off the right.
@@ -423,6 +420,5 @@ level1Hallway1 = """
                             The hallway was narrow, eary and dark,
                             very dark. There is a light at the end
                             though, though is does seem far,
-                            it
+                            it."""
 
-"""

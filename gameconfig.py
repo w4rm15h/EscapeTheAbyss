@@ -6,52 +6,44 @@ from termcolor import colored
 import pysftp as sftp
 from getpass import getpass
 from descriptions import *
-#from levels.level1 import *
 
 #Class to store variables for player
-class CMC():
-    name = ""
-    passHolder = ""
-    choiceMaker = False
-    iV = ""
-    iO = ""
-    playerProfileV = ""
-    playerProfileN = 0
-    word = ""
-    number = 0
-    weaponAttack = 0
-    cellKey = "false"
-    cellDoor = "locked"
-    hasItem = "false"
-    encounter = False
-    level = 0
-    text = ""
-    txt = ""
-    eb = False
-    playerVerb = ""
-    playerNum = ""
-    playerMove = ""
-    playerCheck = False
+class gameVars:
+    playerProfile = {}
+    currentText = ""
+    currentLevel = ""
+    potionStrength = 25
 
-#Clearing screen
+def textPrinting():
+    os.system('clear')
+    print(colored("---------=---------", 'green').center(93, ' '))
+
 def menuStart():
     os.system("clear")
-    print(colored(title, 'green'))
-    time.sleep(0.2)
-    print(colored("---------=---------", 'green').center(93, ' '))
-    print()
+    Print(topBanner)
 
+#Printing standart text
 def Print(text):
-    print(colored('{0}'.format(text), 'green').center(93, " "))
+    print(colored('                            {0}'.format(text), 'green'))
+
+#Printing Alerts and information
+def Alert(text):
+    print()
+    print(colored('                            *{0}*'.format(text), 'yellow'))
+
 #Print for error comments
 def Error(text):
-    print(colored('{0}'.format(text), 'red').center(93, " "))
+    print(colored('                            {0}'.format(text), 'red'))
+
+#Function for the error responses
+def errorResponse():
+    response = random.choice(errorOutputs)
+    Error(response)
 
 #Pressing CTRL + C
 import signal
 def signal_handler(sig, frame):
     pass
-
 signal.signal(signal.SIGINT, signal_handler)
 
 #UPLOADING USERS DATABASE
@@ -71,6 +63,7 @@ def uploadDatabase():
             Print("*FILES SAVED!*")
     except Exception as e:
         Print(str(e))
+
 #DOWNLOADING USER PROFILE
 def loadProfile(userName):
     #getting user profile from server
@@ -89,9 +82,9 @@ def loadProfile(userName):
             s.close()
     except Exception as e:
         Print(str(e))
+
 #UPLOADING USER PROFILE
-def saveProfile(userName):
-    #getting user profile from server
+def uploadingSaveFile():
     try:
         cnopts = sftp.CnOpts()
         cnopts.hostkeys = None
@@ -108,263 +101,173 @@ def saveProfile(userName):
     except Exception as e:
         Print(str(e))
 
+#Uploading the save file quietly
+def saveProfile(userName):
+    #uploading user profile to server
+    try:
+        cnopts = sftp.CnOpts()
+        cnopts.hostkeys = None
+        with sftp.Connection(host = "104.198.133.105", username="w4rm15h", password="Magmaturtle1", cnopts=cnopts) as s:
+            s.cwd("escapeSaves")
+            remotePath='{0}.abyss'.format(userName)
+            localPath='{0}.abyss'.format(userName)
+            s.put(remotePath, localPath)
+            Alert("*Game Saved*")
+            s.close()
+    except Exception as e:
+        Print(str(e))
 
+#LOADINGS AND SAVING PLAYER PROFILE --------START--------
+#Loading the player profile
+def loadProfileGame(playerName):
+    with open("{0}.abyss".format(playerName), 'rb') as loadingProfile:
+        gameVars.playerProfile = pickle.load(loadingProfile)
 
+#Saving the player profile
+def saveProfileGame(playerName):
+    with open("{0}.abyss".format(playerName), 'wb') as savingProfile:
+        pickle.dump(gameVars.playerProfile, savingProfile)
+    saveProfile(playerName)
+#LOADINGS AND SAVING PLAYER PROFILE ---------END---------
 
+def drinkingPotion():
+    Alert("You drink a potion, recovering {0} health.".format(gameVars.potionStrength))
+    gameVars.playerProfile['healingitems']['potion'] -= 1
+    playerHealth = gameVars.playerProfile["playerhealth"]
+    playerMaxHealth = gameVars.playerProfile["playermaxhealth"]
+    gameVars.playerProfile['playerhealth'] += gameVars.potionStrength
+    if gameVars.playerProfile['playerhealth'] > playerMaxHealth:
+        playerHealth = playerHealth
+    saveProfileGame(gameVars.playerProfile['playername'])
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#CONTINUE FUNCTION
-def pressEnter():
-    print(colored("Press Enter", 'green').center(93, " "))
-    print(colored("---=---", 'green').center(93, ' '))
-    cnt = input(colored("> ", 'green').center(93, " "))
-    while cnt != " ":
-        print(colored("I said Enter, pity... Fool."))
-        time.sleep(2)
-        break
+def addingPotion():
+    playerHealth = gameVars.playerProfile['playerhealth']
+    playerMaxHealth = gameVars.playerProfile['playermaxhealth']
+    if gameVars.playerProfile['healingitems']['potion'] < 3:
+        gameVars.playerProfile['healingitems']['potion'] += 1
+        Alert("1 x Potion added")
     else:
-        None
-
-#Loading screen for creating player profile
-def loadingScreen():
-    for i in range(5):
-        sys.stdout.write(colored("\r" + "                                 Creating Profile" + "." * i, 'green'))
-        time.sleep(1)
-        sys.stdout.flush()
-    print()
-
-#Error function
-def invError():
-    errorOutput = random.choice(errorOutputs)
-    print(colored("---=---", 'green').center(93, ' '))
-    print(colored(errorOutput, 'green').center(93, " "))
-    sys.stdout.write("\033[F") #back to previous line
-    sys.stdout.write("\033[F") #back to previous line
-    sys.stdout.write("\033[K") #clear line
-
-def errorFunction():
-    errorOutput = random.choice(errorOutputs)
-    print(colored("---=---", 'green').center(93, ' '))
-    print(colored(errorOutput, 'green').center(93, " "))
-    sys.stdout.write("\033[F") #back to previous line
-    sys.stdout.write("\033[F") #back to previous line
-    sys.stdout.write("\033[F") #back to previous line
-    sys.stdout.write("\033[K") #clear line
-
-def errorFunctionLogin():
-    print(colored("---=---", 'green').center(93, ' '))
-    sys.stdout.write("\033[F") #back to previous line
-    sys.stdout.write("\033[F") #back to previous line
-    sys.stdout.write("\033[F") #back to previous line
-    sys.stdout.write("\033[F") #back to previous line
-    sys.stdout.write("\033[K") #clear line
-
-def errorFunctionPassword():
-    print(colored("---=---", 'green').center(93, ' '))
-    sys.stdout.write("\033[F") #back to previous line
-    sys.stdout.write("\033[F") #back to previous line
-    sys.stdout.write("\033[F") #back to previous line
-    sys.stdout.write("\033[F") #back to previous line
-    sys.stdout.write("\033[F") #back to previous line
-    sys.stdout.write("\033[F") #back to previous line
-    sys.stdout.write("\033[K") #clear line
-
-def areaUpdate(text):
-    CMC.text = (text)
-
-#Global function for input
-def UserInputFunction():
-    while CMC.choiceMaker == False:
-        UserInput = input(colored("                                     > ", 'green'))
-        instruction = UserInput.split(" ")
-        wordLength = len(instruction)
-
-        if UserInput == "inv":
-                CMC.checkplayerProfile = True
-                playerInvInputFunction()
-
-        if wordLength == 2:
-            CMC.iV = (instruction[0])
-            CMC.iO = (instruction[1])
-            CMC.word = (CMC.iV + CMC.iO)
-
-            if CMC.iV not in verbs:
-                print(colored("{0}?".format(CMC.iV), 'green').center(93, " "))
-                print()
-                print(colored("---=---", 'green').center(93, ' '))
-                CMC.choiceMaker = False
+        if gameVars.playerProfile['healingitems']['potion'] == 3:
+            print()
+            Error("Potion's bag full!")
+            Print("Do you want to use the potion now?")
+            usePotion = input(colored("                            > ", 'green'))
+            if usePotion in yes:
+                if playerHealth < playerMaxHealth:
+                    playerHealth += gameVars.potionStrength
+                    if playerHealth > playerMaxHealth:
+                        playerHealth = playerMaxHealth
+                        Alert("Player health: {0}".format(playerHealth))
+                else:
+                    print()
+                    Alert("Player health is already full")
 
             else:
-                if CMC.iO not in objects:
-                    print(colored("{0}?".format(CMC.iO), 'green').center(93, " "))
-                    print()
-                    print(colored("---=---", 'green').center(93, ' '))
-                    CMC.choiceMaker = False
+                print()
+                Print("you put back the potion")
 
-                else:
-                    return(CMC.iV, CMC.iO)
-                    break
+def printStats():
+    playerName = gameVars.playerProfile['playername']
+    weaponName = (gameVars.playerProfile["playerweapon"]["weaponName"])
+    armorName = (gameVars.playerProfile["playerarmor"]["armorName"])
+    weaponAttack = (gameVars.playerProfile["playerweapon"]["weaponAttack"])
+    armorDefence = (gameVars.playerProfile["playerarmor"]["armorDefence"])
+    weaponColour = (gameVars.playerProfile["playerweapon"]["weaponColour"])
+    armorColour = (gameVars.playerProfile["playerarmor"]["armorColour"])
+    playerHealth = gameVars.playerProfile["playerhealth"]
+    playerAttack = gameVars.playerProfile["playerattack"]
+    playerDefence = gameVars.playerProfile["playerdefence"]
+    playerAttackTotal = (playerAttack + weaponAttack)
+    playerDefenceTotal = (playerDefence + armorDefence)
+    weaponPrint = (colored("                            Weapon: " + weaponName, '{0}'.format(weaponColour)))
+    armorPrint = (colored("                            Armor: " + armorName, '{0}'.format(armorColour)))
+
+    Print(divider)
+    Print(playerName)
+    Print(divider)
+    print(weaponPrint)
+    Print("Weapon Attack: {0}".format(weaponAttack))
+    print(armorPrint)
+    Print("Player Health: {0}".format(playerHealth))
+    Print("Armor Defence: {0}".format(armorDefence))
+    Print("Player Attack: {0}".format(playerAttackTotal))
+    Print("Player Defence: {0}".format(playerDefenceTotal))
+    Print(divider)
 
 #Inventory functions
-#Printing Inventory
-def printingInventory():
-    with open("save/{0}.abyss".format(CMC.name), 'rb') as save1:
-        playerProfile = pickle.load(save1)
-    item1 = playerProfile["1. "]
-    item2 = playerProfile["2. "]
-    item3 = playerProfile["3. "]
-    item4 = playerProfile["4. "]
-    item5 = playerProfile["5. "]
-    item6 = playerProfile["6. "]
-    item7 = playerProfile["7. "]
-    item8 = playerProfile["8. "]
-    item9 = playerProfile["9. "]
-    item10 = playerProfile["10. "]
-    print()
-    print(colored("Inventory", 'green').center(93, ' '))
-    print()
-    print(colored("                                      1. " + item1, 'green'))
-    print(colored("                                      2. " + item2, 'green'))
-    print(colored("                                      3. " + item3, 'green'))
-    print(colored("                                      4. " + item4, 'green'))
-    print(colored("                                      5. " + item5, 'green'))
-    print(colored("                                      6. " + item6, 'green'))
-    print(colored("                                      7. " + item7, 'green'))
-    print(colored("                                      8. " + item8, 'green'))
-    print(colored("                                      9. " + item9, 'green'))
-    print(colored("                                     10. " + item10, 'green'))
+def printInventory():
+    item1 = gameVars.playerProfile['inventory']["1. "]
+    item2 = gameVars.playerProfile['inventory']["2. "]
+    item3 = gameVars.playerProfile['inventory']["3. "]
+    item4 = gameVars.playerProfile['inventory']["4. "]
+    item5 = gameVars.playerProfile['inventory']["5. "]
+    item6 = gameVars.playerProfile['inventory']["6. "]
+    item7 = gameVars.playerProfile['inventory']["7. "]
+    item8 = gameVars.playerProfile['inventory']["8. "]
+    item9 = gameVars.playerProfile['inventory']["9. "]
+    item10 = gameVars.playerProfile['inventory']["10. "]
+    playerPotions = gameVars.playerProfile["healingitems"]['potion']
 
-#Adding items to inventory
-def addingplayerProfile(item):
-    with open("save/{0}.abyss".format(CMC.name), 'rb') as loading:
-        playerProfile = pickle.load(loading)
-        printingInventory()
-        print()
-        print(colored("---=---", 'green').center(93, ' '))
-        print(colored("Where do you want to place the item?", 'green').center(93," "))
-        userInput = input(colored("                                     > ", 'green'))
-        num = userInput
-        if num not in oneToTen:
-            errorFunction()()
-        else:
-            playerProfile["{0}. ".format(num)] = item
-            print(colored("{0} added to inventory".format(item), 'green').center(93, " "))
-            with open("save/{0}.abyss".format(CMC.name), 'wb') as save2:
-                pickle.dump(playerProfile, save2)
+    Print(divider)
+    Print('Inventory')
+    Print(divider)
+    Print(" 1. " + item1)
+    Print(" 2. " + item2)
+    Print(" 3. " + item3)
+    Print(" 4. " + item4)
+    Print(" 5. " + item5)
+    Print(" 6. " + item6)
+    Print(" 7. " + item7)
+    Print(" 8. " + item8)
+    Print(" 9. " + item9)
+    Print("10. " + item10)
+    Print(divider)
+    Print("Potion(s): {0}".format(playerPotions))
+    Print(divider)
 
-#In Game inventory functions
-def playerInvInputFunction():
-    menuStart()
-    with open("save/{0}.abyss".format(CMC.name), 'rb') as save2:
-        playerProfile = pickle.load(save2)
-    printingInventory()
-    print(colored("---=---", 'green').center(93, ' '))
-    print(colored("DROP, MOVE, USE or EXIT follow by the playerProfile number", 'green').center(93, " "))
-    print(colored("---=---", 'green').center(93, ' '))
+#Adding item to inventory
+def addItem(item):
+    adding = 1
+    while adding == 1:
 
-    while CMC.checkplayerProfile == True:
-        playerInvInput = input(colored("                                     >", 'green'))
-        playerInvWord = playerInvInput.split(" ")
+        printInventory()
+        Print("Do you want to pick up the {0}?".format(item))
+        Print("Where would you like to place the item?")
+        placement = input(colored("                            >", 'green'))
 
-        if playerInvWord[0] == "exit":
-            CMC.checkplayerProfile == False
-            menuStart()
-            print(colored(CMC.text, 'green'))
-            print(colored("---=---", 'green').center(93, ' '))
-            break
+        if placement in oneToTen:
+            if gameVars.playerProfile['inventory']["{0}. ".format(placement)] != "Empty":
+                Alert("Are you sure you want to overwrite {0}?".format(gameVars.playerProfile['inventory']["{0}. ".format(placement)]))
+                confirm = input(colored("                            >", 'green'))
 
-        if len(playerInvWord) == 2:
-            CMC.playerVerb = (playerInvWord[0])
-            CMC.playerNum = (playerInvWord[1])
-        else:
-            if len(playerInvWord) != 2:
-                errorFunction()
+                if confirm in yes:
+                    gameVars.playerProfile['inventory']["{0}. ".format(placement)] = item
+                    Alert("{0} added to inventory!".format(item))
+                    saveProfileGame(gameVars.playerProfile['playername'])
+                    break
 
-        verb = CMC.playerVerb
-        num = CMC.playerNum
-
-    #Checking to see if word is valid
-        if verb not in playerVerbs or num not in oneToTen:
-            invError()
-
-        if verb == "drop":
-            playerProfile["{0}. ".format(num)] = "Empty"
-
-            with open("save/{0}.abyss".format(CMC.name), 'wb') as save2:
-                pickle.dump(playerProfile, save2)
-
-        if verb == "move" and num in oneToTen:
-            print(colored("---=---", 'green').center(93, ' '))
-            print(colored("Move where?", 'green').center(93, " "))
-            playerMove = input(colored("                                     > ", 'green'))
-
-            if playerMove not in oneToTen:
-                invError()
-
+                else:
+                    if confirm in no:
+                        Error("Alright...")
+                    else:
+                        Error("Not really a valid input was it?")
             else:
-                playerProfileStore = playerProfile["{0}. ".format(num)]
-                playerProfile["{0}. ".format(num)] = playerProfile["{0}. ".format(playerMove)]
-                playerProfile["{0}. ".format(playerMove)] = playerProfileStore
-                with open("save/{0}.abyss".format(CMC.name), 'wb') as save2:
-                    pickle.dump(playerProfile, save2)
-                invError()
+                gameVars.playerProfile['inventory']["{0}. ".format(placement)] = item
+                Alert("{0} added to inventory!".format(item))
+                saveProfileGame(gameVars.playerProfile['playername'])
+                break
+        else:
+            Error("Shame, such a simple creation...")
 
-    #Using Item
-        if verb == "use":
-            healingItem = playerProfile["{0}. ".format(num)]
+def removeItem(item):
+    name = gameVars.playerProfile['playername']
+    for i in gameVars.playerProfile['inventory']:
+        if gameVars.playerProfile['inventory'][i] == item:
+            gameVars.playerProfile['inventory'][i] = 'Empty'
+    Alert("{0} removed from inventory".format(item))
+    saveProfileGame(name)
 
-            if healingItem not in healingtItems:
-                invError()
-
-            else:
-                with open("save/{0}.abyss".format(CMC.name), 'rb') as save1:
-                    playerProfile = pickle.dump(save1)
-
-                typePotion = playerProfile["{0}. ".format(num)]
-
-                if typePotion not in healingItems:
-                    invError()
-
-                heal = (healingItems["{0}".format(typePotion)] * playerProfile[playerhealth]) / 100.0
-
-            #If player health is not already full
-                if playerProfile["playerhealth"] < 100:
-                    playerProfile["playerhealth"] += heal
-
-            #making sure health does not go over max amount
-                if playerProfile["playerhealth"] > 100:
-                    playerProfile["playerhealth"] = 100
-
-                with open("save/{0}.abyss".format(CMC.name), 'wb') as save1:
-                    pickle.dump(playerProfile, save1)
-
-def usingItem(item):
-    with open("save/{0}.abyss".format(CMC.name), 'rb') as save2:
-        playerProfile = pickle.load(save2)
-    for item in playerProfile:
-        CMC.hasItem = "true"
-        break
-    else:
-        CMC.hasItem = "False"
-
-#Picking up WEAPON function
+    #Picking up WEAPON function
 def pickUpWeapon(weaponName):
 #Rolling the dice
     number1 = random.randint(1,20)
@@ -402,9 +305,6 @@ def pickUpWeapon(weaponName):
 #Equipping or passing on WEAPON
 def weaponScore(grade, name, score, colour):
     menuStart()
-#Loading Dictionary
-    with open("save/{0}.abyss".format(CMC.name), 'rb') as loading:
-        playerProfile = pickle.load(loading)
 #Displaying Weapon and givinge choice to equip
     menuStart()
     print()
@@ -418,15 +318,14 @@ def weaponScore(grade, name, score, colour):
     print(colored("-----=-----", 'green').center(93, ' '))
     print(colored("Would you like to equip", 'green').center(93, " "))
     print(colored("'{0}'?".format(name), 'green').center(93, " "))
-    yesNo = input("                                         > ")
+    yesNo = input("                                          > ")
 #Picking Up Weapon
-    if yesNo == "y" or yesNo == "yes":
-        playerProfile["playerweapon"]["weaponGrade"] = grade
-        playerProfile["playerweapon"]["weaponName"] = name
-        playerProfile["playerweapon"]["weaponAttack"] = score
-        playerProfile["playerweapon"]["weaponColour"] = colour
-        with open("save/{0}.abyss".format(CMC.name), 'wb') as saving:
-            pickle.dump(playerProfile, saving)
+    if yesNo in yes:
+        gameVars.playerProfile["playerweapon"]["weaponGrade"] = grade
+        gameVars.playerProfile["playerweapon"]["weaponName"] = name
+        gameVars.playerProfile["playerweapon"]["weaponAttack"] = score
+        gameVars.playerProfile["playerweapon"]["weaponColour"] = colour
+        saveProfileGame(gameVars.playerProfile['playername'])
         print(colored("-----=-----", 'green').center(93, ' '))
         print()
         print(colored("You have equipped the weapon", 'green').center(93, " "))
@@ -435,7 +334,7 @@ def weaponScore(grade, name, score, colour):
         time.sleep(3)
         menuStart()
 #Leaving weapon behind
-    if yesNo == "n" or yesNo == "no":
+    if yesNo in no:
         print(colored("-----=-----", 'green').center(93, ' '))
         print()
         print(colored("You left the weapon behind", 'green').center(93, " "))
@@ -482,8 +381,6 @@ def pickUpArmor(armorName):
 #Equipping or passing on ARMOR
 def armorScore(grade, name, score, colour):
     menuStart()
-    with open("save/{0}.abyss".format(CMC.name), 'rb') as loading:
-        playerProfile = pickle.load(loading)
 #Displaying ARMOR and giving choice to equip
     menuStart()
     print()
@@ -497,15 +394,14 @@ def armorScore(grade, name, score, colour):
     print(colored("-----=-----", 'green').center(93, ' '))
     print(colored("Would you like to equip", 'green').center(93, " "))
     print(colored("'{0}'?".format(name), 'green').center(93, " "))
-    yesNo = input("                                         > ")
+    yesNo = input("                                          > ")
 #Picking Up armor
-    if yesNo == "y" or yesNo == "yes":
-        playerProfile["playerarmor"]["armorGrade"] = grade
-        playerProfile["playerarmor"]["armorName"] = name
-        playerProfile["playerarmor"]["armorDefence"] = score
-        playerProfile["playerarmor"]["armorColour"] = colour
-        with open("save/{0}.abyss".format(CMC.name), 'wb') as saving:
-            pickle.dump(playerProfile, saving)
+    if yesNo in yes:
+        gameVars.playerProfile["playerarmor"]["armorGrade"] = grade
+        gameVars.playerProfile["playerarmor"]["armorName"] = name
+        gameVars.playerProfile["playerarmor"]["armorDefence"] = score
+        gameVars.playerProfile["playerarmor"]["armorColour"] = colour
+        saveProfileGame(gameVars.playerProfile['playername'])
         print(colored("-----=-----", 'green').center(93, ' '))
         print()
         print(colored("You put on the Armor", 'green').center(93, " "))
@@ -514,7 +410,7 @@ def armorScore(grade, name, score, colour):
         time.sleep(3)
         menuStart()
 #Leaving armor behind
-    if yesNo == "n" or yesNo == "no":
+    if yesNo in no:
         print(colored("-----=-----", 'green').center(93, ' '))
         print()
         print(colored("You left the armor behind", 'green').center(93, " "))
